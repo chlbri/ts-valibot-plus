@@ -1,9 +1,14 @@
 {
-  "name": "project1",
+  "name": "core-tests",
   "version": "0.0.1",
+  "private": true,
   "type": "module",
+  "description": "Unit and type tests for @bemedev/valibot",
   "scripts": {
-    "test": "vitest run",
+    "test": "pnpm run test:coverage --no-coverage",
+    "test:only": "pnpm run test:coverage --no-coverage",
+    "test:coverage": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "_lint": "oxlint",
@@ -11,13 +16,13 @@
     "lint": "pnpm run fmt && pnpm run lint:fix",
     "p-q": "pretty-quick",
     "posttest": "exit 0",
-    "test:only": "vitest run --no-coverage",
     "_ci": "pnpm run lint && pnpm run test"
   },
   "devDependencies": {
     "@bemedev/dev-utils": "^1.5.0",
-    "@bemedev/new-package-name-to-change": "workspace:^",
+    "@bemedev/valibot": "workspace:^",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.11"
+    "valibot": "^1.5.0",
+    "vitest": "^5.0.3"
   }
 }

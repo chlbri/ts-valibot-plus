@@ -16,12 +16,12 @@ export default defineConfig({
       enabled: true,
       reportsDirectory: '.coverage',
       provider: 'v8',
+      exclude: ['**/*/fixtures.ts'],
     },
 
     projects: [
-      'packages/core/vitest.config.ts',
-      'packages/__tests__/project1/vitest.config.ts',
+      'packages/valibot/vitest.config.ts',
+      'packages/__tests__/core/vitest.config.ts',
     ],
   },
 });
-

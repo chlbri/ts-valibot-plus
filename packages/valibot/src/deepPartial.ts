@@ -54,18 +54,18 @@ export const deepPartial = <
 >(
   schema: TSchema,
 ): DeepPartialSchema<TSchema> => {
+  // If it's an array, apply deepPartial to its item schema
+  if (schema.type === 'array') {
+    return v.array(deepPartial((schema as any).item)) as any;
+  }
+
   // If it's an object, make all its keys optional and recursive
   if (schema.type === 'object') {
     const newEntries: Record<string, any> = {};
     for (const [key, value] of Object.entries((schema as any).entries)) {
-      newEntries[key] = v.optional(deepPartial(value as any));
+      newEntries[key] = deepPartial(value as any);
     }
-    return v.object(newEntries) as any;
-  }
-
-  // If it's an array, apply deepPartial to its item schema
-  if (schema.type === 'array') {
-    return v.array(deepPartial((schema as any).item)) as any;
+    return v.partial(v.strictObject(newEntries)) as any;
   }
 
   // For primitive types (string, number, etc.), return the schema as is

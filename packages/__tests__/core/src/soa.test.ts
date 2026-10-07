@@ -1,5 +1,5 @@
 import { createTests } from '@bemedev/dev-utils/vitest-extended';
-import { soa } from '@bemedev/valibot';
+import { soa } from '@bemedev/valibot-extended';
 import * as v from 'valibot';
 
 describe('soa', () => {

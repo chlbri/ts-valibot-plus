@@ -17,7 +17,7 @@ export const createImporterTests = (...params: ImporterProps[]) => {
     params.forEach((props, _index) => {
       const _path = props.path ?? '';
       const __path = _path === '' ? '/' : _path;
-      const path = `@bemedev/valibot${_path}`;
+      const path = `@bemedev/valibot-extended${_path}`;
       const success = props.success;
       const fails = props.fails;
       const index = logIndex(allLen, _index);

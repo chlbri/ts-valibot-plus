@@ -1,6 +1,5 @@
 import { createTests } from '@bemedev/dev-utils/vitest-extended';
-import { deepPartial } from '@bemedev/valibot';
-import type { DeepPartial } from '@bemedev/valibot';
+import { deepPartial, type DeepPartial } from '@bemedev/valibot-extended';
 import * as v from 'valibot';
 
 describe('deepPartial', () => {

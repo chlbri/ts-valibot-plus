@@ -1,5 +1,5 @@
 import { createTests } from '@bemedev/dev-utils/vitest-extended';
-import { byFunction } from '@bemedev/valibot';
+import { byFunction } from '@bemedev/valibot-extended';
 import * as v from 'valibot';
 
 describe('byFunction', () => {

@@ -11,6 +11,8 @@ import * as v from 'valibot';
  *
  * @returns A union schema accepting either an array of type `T` or a single value of
  *   type `T`.
+ *
+ * @see {@linkcode v.union} | {@linkcode v.array}
  */
 export const soa = <const T extends v.BaseSchema<any, any, v.BaseIssue<unknown>>>(
   type: T,

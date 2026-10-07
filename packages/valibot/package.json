@@ -1,7 +1,7 @@
 {
   "name": "@bemedev/valibot-extended",
-  "version": "0.1.1",
-  "description": "Valibot utilities: byFunction, deepPartial and soa helpers",
+  "version": "0.1.2",
+  "description": "Valibot utilities",
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

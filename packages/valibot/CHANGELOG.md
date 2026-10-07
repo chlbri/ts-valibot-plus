@@ -1,6 +1,55 @@
 ## CHANGELOG
 
+<details>
+<summary>
+
+## **[0.1.2] - 07/10/2026** => _02:06_
+
+</summary>
+
+- Update the package description to `Valibot utilities`.
+- Add the package documentation in `README.md`: installation, exports table, usage
+  examples for `byFunction`, `deepPartial` and `soa`, and the `DeepPartial` /
+  `DeepPartialSchema` types.
+- <u>Test coverage **_100%_**</u>
+
+</details>
+
 <br/>
+
+<details>
+<summary>
+
+## **[0.1.1] - 07/10/2026** => _02:02_
+
+</summary>
+
+- **BREAKING CHANGE**: Rename the package to `@bemedev/valibot-extended` (previously
+  `@bemedev/new-package-name-to-change`) and move the sources from `packages/core` to
+  `packages/valibot`.
+- Add the public API `byFunction`, `deepPartial` and `soa`, re-exported from
+  `src/index.ts` and reachable through the `@bemedev/valibot-extended/*` sub-paths.
+- Add the `DeepPartial` and `DeepPartialSchema` types alongside the internal `Base`,
+  `CanPartial`, `Entries` and `MaybeReadonly` helpers.
+- Enhance `deepPartial` to support tuples, preserving their length, element order and
+  `readonly` modifiers, as well as `strictObject` schemas.
+- Enhance the NPM publish workflow with a build job, a workspace artifact, the
+  `./packages/valibot` package target and artifact cleanup.
+- Fix `deepPartial` object handling: partial objects are now built with
+  `v.partial(v.strictObject(...))` instead of wrapping every entry with `v.optional`,
+  and array schemas are processed first.
+- Add complete JSDoc on `src/byFunction.ts`, `src/deepPartial.ts` and `src/soa.ts`,
+  including `@template`, `{@linkcode}` references and `@see` sections.
+- Refactor the test suite under `packages/__tests__/core` around shared `createTests`
+  helpers with Acceptation, Success and Fails sections.
+- Add type-level tests for `byFunction`, `deepPartial` and `soa`, executed by Vitest.
+- Update package metadata (keywords, repository URL) and CI scripts (`ci`, `rm`,
+  `rm:lib`, `test:coverage`, `test:watch`).
+- Add `valibot` (`^1.5.0`) as a production dependency.
+- <u>Test coverage **_100%_**</u>
+
+</details>
+
 <br/>
 
 ### Version [0.0.1] --> _date & hour_
@@ -9,7 +58,7 @@
 
 <br/>
 
-## Auteur
+## Author
 
 chlbri (bri_lvi@icloud.com)
 
@@ -19,6 +68,6 @@ chlbri (bri_lvi@icloud.com)
 
 <br/>
 
-## Liens
+## Links
 
-- [Documentation](https://github.com/chlbri/new-package)
+- [Documentation](https://github.com/chlbri/ts-valibot-plus)

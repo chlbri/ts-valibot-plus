@@ -9,6 +9,8 @@ import * as v from 'valibot';
  * @param fn - Factory function producing the schema.
  *
  * @returns The resolved schema instance of type `T`.
+ *
+ * @see -- type {@linkcode v.BaseIssue}
  */
 export const byFunction = <
   const T extends v.BaseSchema<any, any, v.BaseIssue<unknown>>,

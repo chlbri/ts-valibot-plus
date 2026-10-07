@@ -1,12 +1,164 @@
-# Beatifull lib
+# @bemedev/valibot-extended
 
-A beautifull description
+Extra helpers for [Valibot](https://valibot.dev): `byFunction`, `deepPartial` and
+`soa`.
+
+<br/>
+
+## Installation
+
+```bash
+pnpm add @bemedev/valibot-extended
+# or
+npm install @bemedev/valibot-extended
+```
+
+`valibot` (`^1.5.0`) ships as a direct dependency, so it does not need to be
+installed separately. The package is published as a dual ESM/CJS build with its type
+declarations, so it works in both `import` and `require` contexts.
+
+<br/>
+
+## Exports
+
+| Export              | Sub-path       | Description                                                              |
+| ------------------- | -------------- | ------------------------------------------------------------------------ |
+| `byFunction`        | `/byFunction`  | Lazy schema evaluator returning the schema built by a factory            |
+| `deepPartial`       | `/deepPartial` | Recursively converts an object, tuple or array schema into a partial one |
+| `soa`               | `/soa`         | Union accepting either a single value or an array of values              |
+| `DeepPartial`       | `/deepPartial` | Recursive deep partial type                                              |
+| `DeepPartialSchema` | `/deepPartial` | Schema type produced by `deepPartial`                                    |
+
+Every export is available from the package root and from a dedicated sub-path:
+
+```ts
+import { byFunction, deepPartial, soa } from '@bemedev/valibot-extended';
+import { deepPartial } from '@bemedev/valibot-extended/deepPartial';
+```
+
+<br/>
+
+## `byFunction`
+
+Defers the creation of a schema, which keeps recursive and mutually referencing
+schemas easy to declare.
+
+```ts
+import { byFunction } from '@bemedev/valibot-extended';
+import * as v from 'valibot';
+
+const schema = byFunction(() => v.object({ name: v.string(), age: v.number() }));
+
+type User = v.InferOutput<typeof schema>;
+// { name: string; age: number }
+
+const parse = v.parser(schema);
+parse({ name: 'Gartner', age: 40 }); // => { name: 'Gartner', age: 40 }
+parse({ name: 'Gartner', age: 'old' } as any); // => throws
+```
+
+<br/>
+
+## `deepPartial`
+
+Turns every object entry optional, recursively. Arrays and tuples recurse into their
+items while keeping their shape, and any other schema is returned untouched. Objects
+are rebuilt as strict partial objects, so unknown keys are rejected.
+
+```ts
+import { deepPartial } from '@bemedev/valibot-extended/deepPartial';
+import * as v from 'valibot';
+
+const base = v.object({
+  name: v.string(),
+  nested: v.object({ tag: v.string() }),
+  tags: v.array(v.string()),
+});
+
+const schema = deepPartial(base);
+const parse = v.parser(schema);
+
+parse({}); // => {}
+parse({ name: 'Gartner', nested: { tag: 'old' } }); // => valid
+parse({ tags: ['smart', 'strong'] }); // => valid
+parse({ toto: 67 } as any); // => throws (unknown key)
+
+type Shape = v.InferOutput<typeof schema>;
+// { name?: string; nested?: { tag?: string }; tags?: string[] }
+```
+
+Tuples keep their length and element order:
+
+```ts
+const tuple = deepPartial(v.tuple([base, v.string()]));
+// [{ name?: string; ... }, string]
+```
+
+<br/>
+
+### `DeepPartial` and `DeepPartialSchema`
+
+Both types let you describe a deeply optional shape without re-declaring it, and pin
+a schema variable to the exact schema `deepPartial` produces.
+
+```ts
+import {
+  deepPartial,
+  type DeepPartial,
+  type DeepPartialSchema,
+} from '@bemedev/valibot-extended';
+import * as v from 'valibot';
+
+const base = v.object({ name: v.string(), nested: v.object({ tag: v.string() }) });
+
+type Shape = DeepPartial<v.InferOutput<typeof base>>;
+// { name?: string; nested?: { tag?: string } }
+
+const schema: DeepPartialSchema<typeof base> = deepPartial(base);
+```
+
+<br/>
+
+## `soa`
+
+Wraps a schema into a union accepting either a single value or an array of values —
+handy for struct-of-arrays payloads coming from a CSV or an API.
+
+```ts
+import { soa } from '@bemedev/valibot-extended';
+import * as v from 'valibot';
+
+const schema = soa(v.object({ name: v.string(), age: v.number() }));
+const parse = v.parser(schema);
+
+const many = [
+  { name: 'Gartner', age: 40 },
+  { name: 'Bri', age: 20 },
+];
+
+parse({ name: 'Gartner', age: 40 }); // => { name: 'Gartner', age: 40 }
+parse([]); // => []
+parse(many); // => array of objects
+parse(123 as any); // => throws
+```
+
+<br/>
+
+## Development
+
+From `packages/valibot`:
+
+```bash
+pnpm run build   # bundle the library with rolldown
+pnpm run test    # run the Vitest suite, coverage enabled by default
+pnpm run lint    # format with oxfmt, then lint with oxlint
+```
 
 <br/>
 
 ## Licence
 
-MIT
+[MIT](LICENSE)
 
 ## CHANGE_LOG
 
@@ -14,7 +166,7 @@ Read [CHANGELOG.md](CHANGELOG.md) for more details about the changes.
 
 <br/>
 
-## Auteur
+## Author
 
 chlbri (bri_lvi@icloud.com)
 
@@ -24,6 +176,6 @@ chlbri (bri_lvi@icloud.com)
 
 <br/>
 
-## Liens
+## Links
 
-- [Documentation](https://github.com/chlbri/new-package)
+- [Documentation](https://github.com/chlbri/ts-valibot-plus)

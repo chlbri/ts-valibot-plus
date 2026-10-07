@@ -1,7 +1,20 @@
 import * as v from 'valibot';
 
+/**
+ * Utility type resolving to either `T` or its type {@linkcode Readonly} counterpart.
+ *
+ * @template T - Wrapped value type.
+ */
 type MaybeReadonly<T> = T | Readonly<T>;
 
+/**
+ * Subset of type {@linkcode v.BaseSchema} that can be structurally rebuilt by
+ * {@linkcode deepPartial}.
+ *
+ * Schemas of type {@linkcode v.SchemaWithPipe}, {@linkcode v.SchemaWithPipeAsync},
+ * {@linkcode v.CustomSchema} and {@linkcode v.CustomSchemaAsync} are excluded because
+ * their internal structure cannot be introspected.
+ */
 type Base = Exclude<
   v.BaseSchema<any, any, any>,
   | v.SchemaWithPipe<any>
@@ -10,8 +23,16 @@ type Base = Exclude<
   | v.CustomSchemaAsync<any, any>
 >;
 
+/** Object entry map linking each entry key to its schema of type {@linkcode Base}. */
 type Entries = Record<string, Base>;
 
+/**
+ * Union of the polymorphic schema kinds accepted by {@linkcode deepPartial}.
+ *
+ * Covers object, strict object, tuple and array schemas of type
+ * {@linkcode v.ObjectSchema}, {@linkcode v.StrictObjectSchema},
+ * {@linkcode v.TupleSchema} and {@linkcode v.ArraySchema}.
+ */
 type CanPartial =
   | v.ObjectSchema<Entries, any>
   | v.StrictObjectSchema<Entries, any>
@@ -20,6 +41,9 @@ type CanPartial =
 
 /**
  * Recursive deep partial type for objects and arrays.
+ *
+ * Functions are preserved, arrays and tuples are delegated to
+ * {@linkcode _DeepPartialArray}, and objects to {@linkcode _DeepPartialObject}.
  *
  * @template T - The target type to make deeply partial.
  */
@@ -34,9 +58,10 @@ export type DeepPartial<T> = T extends (...args: any[]) => any
 /**
  * Internal recursive type helper for deep partial arrays and tuples.
  *
- * The whole array type is reduced instead of inferring a single element type, so
- * tuples keep their length, element order and readonly modifiers rather than being
- * widened to a homogeneous array.
+ * Each element is mapped through type {@linkcode DeepPartial}, and the whole array
+ * type is reduced instead of inferring a single element type, so tuples keep their
+ * length, element order and readonly modifiers rather than being widened to a
+ * homogeneous array.
  *
  * @template T - Array or tuple structure type.
  */
@@ -47,6 +72,8 @@ export type _DeepPartialArray<T extends readonly unknown[]> =
 
 /**
  * Internal recursive type helper for deep partial objects.
+ *
+ * Every property becomes optional and is mapped through type {@linkcode DeepPartial}.
  *
  * @template T - Object structure type.
  */
@@ -64,13 +91,20 @@ export type DeepPartialSchema<TSchema extends CanPartial> = v.BaseSchema<
 >;
 
 /**
- * Recursively converts a Valibot object or array schema into a deep partial schema.
+ * Recursively converts a Valibot object, tuple or array schema of type
+ * {@linkcode CanPartial} into a deep partial schema.
+ *
+ * Object schemas become strict objects with every entry optional and recursively
+ * transformed, while arrays and tuples recurse into their items. Any other schema is
+ * returned unchanged.
  *
  * @template | {@linkcode v.BaseSchema} `TSchema` - The base schema to convert.
  *
  * @param schema - Target schema to transform.
  *
  * @returns A new deeply optional schema of type {@linkcode DeepPartialSchema}.
+ *
+ * @see -- type {@linkcode DeepPartial}
  */
 export const deepPartial = <const TSchema extends CanPartial>(
   schema: TSchema,

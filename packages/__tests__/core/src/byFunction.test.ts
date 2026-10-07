@@ -2,46 +2,94 @@ import { createTests } from '@bemedev/dev-utils/vitest-extended';
 import { byFunction } from '@bemedev/valibot-extended';
 import * as v from 'valibot';
 
-describe('byFunction', () => {
-  const { acceptation, success } = createTests(byFunction, {
-    transform: (schema: any) => schema?.type,
+describe('TESTS', () => {
+  describe('#01 => string', () => {
+    const schema = byFunction(() => v.string());
+    const parse = v.parser(schema);
+    const { acceptation, success, fails } = createTests(parse);
+    type S = v.InferOutput<typeof schema>;
+    const rightValue1: S = 'Gartner';
+
+    describe('#00 => Acceptation', acceptation);
+
+    describe(
+      '#01 => Success',
+      success({
+        invite: 'Right value #1',
+        parameters: rightValue1,
+        expected: rightValue1,
+      }),
+    );
+
+    describe(
+      '#02 => fails',
+      fails(
+        { invite: 'undefined' },
+        { invite: 'number', parameters: 123 },
+        { invite: 'boolean', parameters: false },
+        { invite: 'object', parameters: { toto: 67 } },
+        { invite: 'array', parameters: [['one', 'two']] },
+      ),
+    );
   });
 
-  describe('#00 => Acceptation', acceptation);
+  describe('#02 => number', () => {
+    const schema = byFunction(() => v.number());
+    const parse = v.parser(schema);
+    const { acceptation, success, fails } = createTests(parse);
+    type S = v.InferOutput<typeof schema>;
+    const rightValue1: S = 40;
 
-  describe(
-    '#01 => Success',
-    success(
-      {
-        invite: 'returns the string schema produced by the factory',
-        parameters: [() => v.string()],
-        expected: 'string',
-      },
-      {
-        invite: 'returns the number schema produced by the factory',
-        parameters: [() => v.number()],
-        expected: 'number',
-      },
-      {
-        invite: 'returns the object schema produced by the factory',
-        parameters: [() => v.object({ name: v.string() })],
-        expected: 'object',
-      },
-    ),
-  );
+    describe('#00 => Acceptation', acceptation);
 
-  describe('types', () => {
-    test('infers the exact schema type returned by the factory', () => {
-      const schema = byFunction(() => v.string());
-      expectTypeOf(schema).toEqualTypeOf<v.StringSchema<undefined>>();
-      expectTypeOf<v.InferOutput<typeof schema>>().toEqualTypeOf<string>();
-    });
+    describe(
+      '#01 => Success',
+      success({
+        invite: 'Right value #1',
+        parameters: rightValue1,
+        expected: rightValue1,
+      }),
+    );
 
-    test('keeps object schemas usable with valibot parsing', () => {
-      const schema = byFunction(() => v.object({ name: v.string() }));
-      const parsed = v.parse(schema, { name: 'bemedev' });
-      expect(parsed).toStrictEqual({ name: 'bemedev' });
-      expectTypeOf(parsed).toEqualTypeOf<{ name: string }>();
-    });
+    describe(
+      '#02 => fails',
+      fails(
+        { invite: 'undefined' },
+        { invite: 'string', parameters: 'string' },
+        { invite: 'boolean', parameters: false },
+        { invite: 'object', parameters: { toto: 67 } },
+        { invite: 'array', parameters: [['one', 'two']] },
+      ),
+    );
+  });
+
+  describe('#03 => object', () => {
+    const schema = byFunction(() => v.object({ name: v.string() }));
+    const parse = v.parser(schema);
+    const { acceptation, success, fails } = createTests(parse);
+    type S = v.InferOutput<typeof schema>;
+    const rightObject1: S = { name: 'Gartner' };
+
+    describe('#00 => Acceptation', acceptation);
+
+    describe(
+      '#01 => Success',
+      success({
+        invite: 'Right object #1',
+        parameters: rightObject1,
+        expected: rightObject1,
+      }),
+    );
+
+    describe(
+      '#02 => fails',
+      fails(
+        { invite: 'undefined' },
+        { invite: 'string', parameters: 'string' },
+        { invite: 'number', parameters: 123 },
+        { invite: 'Wrong object #1', parameters: { name: 67 } },
+        { invite: 'array', parameters: [[{ name: 'Gartner' }]] },
+      ),
+    );
   });
 });

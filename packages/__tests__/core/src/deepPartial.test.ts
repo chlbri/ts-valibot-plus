@@ -1,81 +1,229 @@
 import { createTests } from '@bemedev/dev-utils/vitest-extended';
-import { deepPartial, type DeepPartial } from '@bemedev/valibot-extended';
+import { deepPartial } from '@bemedev/valibot-extended/deepPartial';
 import * as v from 'valibot';
 
-describe('deepPartial', () => {
-  const baseSchema = v.object({
+describe('TESTS', () => {
+  const baseSchema1 = v.object({
     name: v.string(),
     age: v.number(),
     nested: v.object({ tag: v.string() }),
     tags: v.array(v.string()),
   });
 
-  const partialSchema = deepPartial(baseSchema);
+  describe('#01 => object', () => {
+    const partialSchema = deepPartial(baseSchema1);
+    const parse = v.parser(partialSchema);
+    const { acceptation, success, fails } = createTests(parse);
+    describe('#00 => Acceptation', acceptation);
+    type S = v.InferOutput<typeof partialSchema>;
+    const rightObject1: S = { age: 10 };
+    const rightObject2: S = { name: 'Gartner' };
 
-  const { acceptation, success } = createTests(deepPartial, {
-    transform: (schema: any) => schema?.type,
+    const rightObject3: S = {
+      name: 'Gartner',
+      age: 40,
+      nested: { tag: 'old' },
+      tags: ['smart', 'strong'],
+    };
+
+    describe(
+      '#01 => Success',
+      success(
+        { invite: 'Empty object #1', parameters: {}, expected: {} },
+
+        {
+          invite: 'Right object #1',
+          parameters: rightObject1,
+          expected: rightObject1,
+        },
+
+        {
+          invite: 'Right object #2',
+          parameters: rightObject2,
+          expected: rightObject2,
+        },
+
+        {
+          invite: 'Right object #3',
+          parameters: rightObject3,
+          expected: rightObject3,
+        },
+      ),
+    );
+
+    describe(
+      '#02 => fails',
+      fails(
+        { invite: 'undefined' },
+        { invite: 'string', parameters: 'string' },
+        { invite: 'boolean', parameters: false },
+        { invite: 'Wrong format object', parameters: { toto: 67 } },
+      ),
+    );
   });
 
-  describe('#00 => Acceptation', acceptation);
+  describe('#02 => Array', () => {
+    const baseSchema2 = v.array(v.string());
 
-  describe(
-    '#01 => Success',
-    success(
+    const partialSchema = deepPartial(baseSchema2);
+    const parse = v.parser(partialSchema);
+    const { acceptation, success, fails } = createTests(parse);
+    type S = v.InferOutput<typeof partialSchema>;
+    const rightObject1: S = ['one'];
+    const rightObject2: S = ['name', 'firstName'];
+
+    describe('#00 => Acceptation', acceptation);
+
+    describe(
+      '#01 => Success',
+      success(
+        { invite: 'Empty object #1', parameters: [[]], expected: [] },
+
+        {
+          invite: 'Right object #1',
+          parameters: [rightObject1],
+          expected: rightObject1,
+        },
+
+        {
+          invite: 'Right object #2',
+          parameters: [rightObject2],
+          expected: rightObject2,
+        },
+      ),
+    );
+
+    describe(
+      '#02 => fails',
+      fails(
+        { invite: 'undefined' },
+        { invite: 'string', parameters: 'string' },
+        { invite: 'boolean', parameters: false },
+        { invite: 'Wrong format object', parameters: { toto: 67 } },
+        { invite: 'Wrong array #1', parameters: [66, true] },
+        { invite: 'Wrong array #2', parameters: ['string', 66, true] },
+      ),
+    );
+  });
+
+  describe('#03 => Array of Objects', () => {
+    const partialSchema = deepPartial(v.array(baseSchema1));
+    const parse = v.parser(partialSchema);
+    const { acceptation, success, fails } = createTests(parse);
+    type S = v.InferOutput<typeof partialSchema>;
+    const rightObject1: S = [{ age: 10 }];
+    const rightObject2: S = [{ name: 'Gartner' }, { tags: ['smart', 'strong'] }];
+
+    const rightObject3: S = [
       {
-        invite: 'converts an object schema (stays an object)',
-        parameters: [v.object({ a: v.string() })],
-        expected: 'object',
+        name: 'Gartner',
+        age: 40,
+        nested: { tag: 'old' },
+        tags: ['smart', 'strong'],
       },
+      ...rightObject1,
+      ...rightObject2,
+    ];
+
+    describe('#00 => Acceptation', acceptation);
+
+    describe(
+      '#01 => Success',
+      success(
+        { invite: 'Empty object #1', parameters: [[]], expected: [] },
+
+        {
+          invite: 'Right object #1',
+          parameters: [rightObject1],
+          expected: rightObject1,
+        },
+
+        {
+          invite: 'Right object #2',
+          parameters: [rightObject2],
+          expected: rightObject2,
+        },
+
+        {
+          invite: 'Right object #3',
+          parameters: [rightObject3],
+          expected: rightObject3,
+        },
+      ),
+    );
+
+    describe(
+      '#02 => fails',
+      fails(
+        { invite: 'undefined' },
+        { invite: 'string', parameters: 'string' },
+        { invite: 'boolean', parameters: false },
+        { invite: 'Wrong format object', parameters: { toto: 67 } },
+        { invite: 'Wrong array #1', parameters: [[66, true]] },
+        { invite: 'Wrong array #2', parameters: [['string', 66, true]] },
+        { invite: 'Wrong array #3', parameters: rightObject3 },
+        { invite: 'Wrong array #4', parameters: [[...rightObject3, 45]] },
+      ),
+    );
+  });
+
+  describe('#04 => tuple', () => {
+    const baseSchema2 = v.tuple([baseSchema1, v.string()]);
+    const partialSchema = deepPartial(baseSchema2);
+    const parse = v.parser(partialSchema);
+    const { acceptation, success, fails } = createTests(parse);
+    type S = v.InferOutput<typeof partialSchema>;
+    const rightObject1: S = [{ age: 10 }, 'ok'];
+    const rightObject2: S = [{ name: 'Gartner' }, 'string'];
+
+    const rightObject3: S = [
       {
-        invite: 'converts an array schema (stays an array)',
-        parameters: [v.array(v.string())],
-        expected: 'array',
+        name: 'Gartner',
+        age: 40,
+        nested: { tag: 'old' },
+        tags: ['smart', 'strong'],
       },
-      {
-        invite: 'leaves primitive schemas untouched',
-        parameters: [v.string()],
-        expected: 'string',
-      },
-    ),
-  );
+      'string',
+    ];
 
-  describe('types', () => {
-    test('DeepPartial makes keys optional recursively', () => {
-      type Target = {
-        a: string;
-        nested: { b: number; deep: { c: boolean } };
-        list: string[];
-      };
-      expectTypeOf<DeepPartial<Target>>().toEqualTypeOf<{
-        a?: string;
-        nested?: { b?: number; deep?: { c?: boolean } };
-        list?: string[] | undefined;
-      }>();
-    });
+    describe('#00 => Acceptation', acceptation);
 
-    test('partial schema output matches the deep partial input', () => {
-      expectTypeOf<v.InferOutput<typeof partialSchema>>().toEqualTypeOf<
-        DeepPartial<v.InferOutput<typeof baseSchema>>
-      >();
-    });
+    describe(
+      '#01 => Success',
+      success(
+        {
+          invite: 'Right object #1',
+          parameters: [rightObject1],
+          expected: rightObject1,
+        },
 
-    test('accepts empty, subset and nested partial inputs', () => {
-      expect(v.parse(partialSchema, {})).toStrictEqual({});
-      expect(v.parse(partialSchema, { name: 'bemedev' })).toStrictEqual({
-        name: 'bemedev',
-      });
-      expect(v.parse(partialSchema, { nested: {} })).toStrictEqual({ nested: {} });
-    });
+        {
+          invite: 'Right object #2',
+          parameters: [rightObject2],
+          expected: rightObject2,
+        },
 
-    test('makes every entry optional, recursively', () => {
-      const entries = (partialSchema as any).entries;
-      expect(entries.name.type).toBe('optional');
-      expect(entries.age.type).toBe('optional');
-      expect(entries.nested.type).toBe('optional');
-    });
+        {
+          invite: 'Right object #3',
+          parameters: [rightObject3],
+          expected: rightObject3,
+        },
+      ),
+    );
 
-    test('still rejects wrong primitive types', () => {
-      expect(() => v.parse(partialSchema, { age: 'not-a-number' })).toThrow();
-    });
+    describe(
+      '#02 => fails',
+      fails(
+        { invite: 'Empty object #1', parameters: [[]] },
+        { invite: 'undefined' },
+        { invite: 'string', parameters: 'string' },
+        { invite: 'boolean', parameters: false },
+        { invite: 'Wrong format object', parameters: { toto: 67 } },
+        { invite: 'Wrong array #1', parameters: [[66, true]] },
+        { invite: 'Wrong array #2', parameters: [['string', 66, true]] },
+        { invite: 'Wrong array #3', parameters: rightObject3 },
+        { invite: 'Wrong array #4', parameters: [[...rightObject3, 45]] },
+      ),
+    );
   });
 });

@@ -9,7 +9,7 @@ export default defineConfig({
     slowTestThreshold: 3000,
     logHeapUsage: true,
     globals: true,
-    typecheck: { enabled: true, ignoreSourceErrors: false },
+    typecheck: { enabled: true, ignoreSourceErrors: false, },
     env: { NODE_ENV: 'test' },
 
     coverage: {

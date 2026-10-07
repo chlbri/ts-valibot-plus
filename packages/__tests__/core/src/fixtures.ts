@@ -76,3 +76,8 @@ export const createImporterTests = (...params: ImporterProps[]) => {
 export const functionCheck: Expecter = value => {
   return expect(value).toBeTypeOf('function');
 };
+
+export const schemaCheck: Expecter = value => {
+  expect(value.kind).toBe('schema');
+  return expect(value['~run']).toBeTypeOf('function');
+};

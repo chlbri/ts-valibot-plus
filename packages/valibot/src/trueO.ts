@@ -8,6 +8,7 @@ import * as v from 'valibot';
  *
  * @example
  *   ```ts
+ *   import { trueO } from '@bemedev/valibot-extended';
  *   import * as v from 'valibot';
  *
  *   v.parse(trueO, {}); // ok
@@ -16,7 +17,8 @@ import * as v from 'valibot';
  *   v.parse(trueO, new Date()); // throws
  *   ```;
  *
- * @see {@linkcode v.objectWithRest}, {@linkcode v.any}, {@linkcode v.check}
+ * @see {@linkcode v.objectWithRest}, {@linkcode v.any}, {@linkcode v.check},
+ * {@linkcode v.unknown}, {@linkcode v.pipe}
  */
 export const trueO = v.pipe(
   // 1. On part de la valeur brute pour ne rien laisser passer avant la vérification

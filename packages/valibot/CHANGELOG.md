@@ -3,6 +3,28 @@
 <details>
 <summary>
 
+## **[0.1.3] - 07/10/2026** => _13:13_
+
+</summary>
+
+- Add the `trueO` public API: a schema accepting only plain objects, i.e. objects
+  whose prototype is `Object.prototype` or `null`, and rejecting arrays, `null`,
+  primitives and class instances. It is re-exported from `src/index.ts` and reachable
+  through the `@bemedev/valibot-extended/trueO` sub-path.
+- Add unit and type-level tests for `trueO`, along with a shared `schemaCheck`
+  importer expectation in the test fixtures.
+- Rename the Vitest project from `__tests__/core` to `core`.
+- Improve the JSDoc of `byFunction`, `deepPartial` and `soa`: target `@template`
+  types, typed `@param` references and `@see` links.
+- <u>Test coverage **_100%_**</u>
+
+</details>
+
+<br/>
+
+<details>
+<summary>
+
 ## **[0.1.2] - 07/10/2026** => _02:06_
 
 </summary>

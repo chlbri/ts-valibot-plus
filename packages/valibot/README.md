@@ -1,7 +1,7 @@
 # @bemedev/valibot-extended
 
-Extra helpers for [Valibot](https://valibot.dev): `byFunction`, `deepPartial` and
-`soa`.
+Extra helpers for [Valibot](https://valibot.dev): `byFunction`, `deepPartial`, `soa`
+and `trueO`.
 
 <br/>
 
@@ -26,13 +26,14 @@ declarations, so it works in both `import` and `require` contexts.
 | `byFunction`        | `/byFunction`  | Lazy schema evaluator returning the schema built by a factory            |
 | `deepPartial`       | `/deepPartial` | Recursively converts an object, tuple or array schema into a partial one |
 | `soa`               | `/soa`         | Union accepting either a single value or an array of values              |
+| `trueO`             | `/trueO`       | Schema accepting only plain objects                                      |
 | `DeepPartial`       | `/deepPartial` | Recursive deep partial type                                              |
 | `DeepPartialSchema` | `/deepPartial` | Schema type produced by `deepPartial`                                    |
 
 Every export is available from the package root and from a dedicated sub-path:
 
 ```ts
-import { byFunction, deepPartial, soa } from '@bemedev/valibot-extended';
+import { byFunction, deepPartial, soa, trueO } from '@bemedev/valibot-extended';
 import { deepPartial } from '@bemedev/valibot-extended/deepPartial';
 ```
 
@@ -140,6 +141,33 @@ parse({ name: 'Gartner', age: 40 }); // => { name: 'Gartner', age: 40 }
 parse([]); // => []
 parse(many); // => array of objects
 parse(123 as any); // => throws
+```
+
+<br/>
+
+## `trueO`
+
+Validates that the input is a "true" plain object. Arrays, `null`, primitives, class
+instances and any object with a custom prototype are rejected, while objects created
+from `{}` or `Object.create(null)` are accepted.
+
+```ts
+import { trueO } from '@bemedev/valibot-extended/trueO';
+import * as v from 'valibot';
+
+const parse = v.parser(trueO);
+
+parse({}); // => {}
+parse({ name: 'Gartner' }); // => { name: 'Gartner' }
+parse({ nested: { tag: 'old' }, tags: ['smart'] }); // => valid
+parse(Object.assign(Object.create(null), { name: 'Gartner' })); // => valid
+parse([]); // => throws
+parse(new Date()); // => throws
+parse(Object.create({ toto: 67 })); // => throws
+parse(123 as any); // => throws
+
+type Shape = v.InferOutput<typeof trueO>;
+// Record<string, any>
 ```
 
 <br/>

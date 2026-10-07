@@ -42,8 +42,9 @@ type CanPartial =
 /**
  * Recursive deep partial type for objects and arrays.
  *
- * Functions are preserved, arrays and tuples are delegated to
- * {@linkcode _DeepPartialArray}, and objects to {@linkcode _DeepPartialObject}.
+ * Functions are preserved, arrays and tuples are delegated to type
+ * {@linkcode _DeepPartialArray}, and objects to type
+ * {@linkcode _DeepPartialObject}.
  *
  * @template T - The target type to make deeply partial.
  */
@@ -82,7 +83,7 @@ export type _DeepPartialObject<T> = { [P in keyof T]?: DeepPartial<T[P]> };
 /**
  * Type definition for a deeply partial Valibot schema.
  *
- * @template | {@linkcode v.BaseSchema} `TSchema` - The input schema to convert.
+ * @template | {@linkcode CanPartial} `TSchema` - The input schema to convert.
  */
 export type DeepPartialSchema<TSchema extends CanPartial> = v.BaseSchema<
   DeepPartial<v.InferInput<TSchema>>,
@@ -98,9 +99,9 @@ export type DeepPartialSchema<TSchema extends CanPartial> = v.BaseSchema<
  * transformed, while arrays and tuples recurse into their items. Any other schema is
  * returned unchanged.
  *
- * @template | {@linkcode v.BaseSchema} `TSchema` - The base schema to convert.
+ * @template | {@linkcode CanPartial} `TSchema` - The base schema to convert.
  *
- * @param schema - Target schema to transform.
+ * @param schema - Target schema of type `TSchema` to transform.
  *
  * @returns A new deeply optional schema of type {@linkcode DeepPartialSchema}.
  *

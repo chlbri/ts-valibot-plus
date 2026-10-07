@@ -6,7 +6,7 @@ import * as v from 'valibot';
  * @template | {@linkcode v.BaseSchema} `T` - Output schema type extending type
  *   {@linkcode v.BaseSchema}.
  *
- * @param fn - Factory function producing the schema.
+ * @param fn - Factory function producing the schema of type `T`.
  *
  * @returns The resolved schema instance of type `T`.
  *

@@ -37,8 +37,9 @@ export const createImporterTests = (...params: ImporterProps[]) => {
           /* v8 ignore else -- @preserve */
           if (hasSuccess) {
             if (success.length === 1) {
-              test(`#01 => Success for "${success[0]}"`, () =>
-                props.expect(module[success[0]]));
+              test(`#01 => Success for "${success[0]}"`, () => {
+                props.expect(module[success[0]]);
+              });
             } else
               describe(`#1 => Check success for path "${__path}"`, () => {
                 test.each(success)('#%$ => for "%s"', async key => {
@@ -52,8 +53,9 @@ export const createImporterTests = (...params: ImporterProps[]) => {
             const index = hasSuccess ? '2' : '1';
 
             if (fails.length === 1) {
-              return test.fails(`#${index} => Failed for "${fails[0]}"`, () =>
-                props.expect(module[fails[0]]));
+              return test.fails(`#${index} => Failed for "${fails[0]}"`, () => {
+                props.expect(module[fails[0]]);
+              });
             }
 
             describe(`#${index} => Check fails for path "${__path}"`, () => {
